@@ -39,14 +39,20 @@ const PUZZLE = {
   rings: [
     { x: 2, y: 2, dx: 1, dy: 0, side: "top" },
     { x: 2, y: 2, dx: 0, dy: 1, side: "bottom" },
-    // { x: 0, y: 0, dx: -1, dy: 0, side: "top" },
   ],
 };
 
 const ALGORITHM = "bfs";
 const SOLVE_STEP_DELAY = 0;
-const ANIMATION_STEP_DELAY = 200;
+let ANIMATION_STEP_DELAY = 500;
 const FINISH_AT_START = false;
+
+const animationDelayInput = document.getElementById("animation-delay");
+animationDelayInput.value = ANIMATION_STEP_DELAY / 1000;
+animationDelayInput.addEventListener("change", (e) => {
+  const value = +e.target.value * 1000;
+  if (value > 0) ANIMATION_STEP_DELAY = value;
+});
 
 const directions = [];
 for (let x = -1; x <= 1; x++) {
@@ -286,6 +292,17 @@ const rings = PUZZLE.rings.map((ring, i) => {
   return ringGroups;
 });
 
+let solveStepNext, solveStepPrev;
+window.addEventListener("keydown", (e) => {
+  console.log(e.key);
+  if (e.key === "ArrowRight") {
+    solveStepNext?.();
+  }
+  if (e.key === "ArrowLeft") {
+    solveStepPrev?.();
+  }
+});
+
 solve();
 
 async function solve() {
@@ -373,7 +390,6 @@ async function solve() {
         stack.push([newRingState, 0]);
 
         if (isSolved(newRingState)) {
-          // return newRingPath;
           solvedRingPaths.push(stack.map(([ringState]) => ringState));
           continue ringLoop;
         }
@@ -396,11 +412,8 @@ async function solve() {
 async function animateSolvedPaths(solvedRingPaths) {
   let dir = 1;
   while (true) {
-    for (
-      let i = dir === 1 ? 0 : solvedRingPaths.length - 1;
-      dir === 1 ? i < solvedRingPaths.length : i >= 0;
-      i += dir
-    ) {
+    let i = dir === 1 ? 0 : solvedRingPaths.length - 1;
+    while (dir === 1 ? i < solvedRingPaths.length : i >= 0) {
       const ringPath = solvedRingPaths[i];
       for (
         let j = dir === 1 ? 0 : ringPath.length - 1;
@@ -409,10 +422,22 @@ async function animateSolvedPaths(solvedRingPaths) {
       ) {
         const ringState = ringPath[j];
         updateRing(rings[i], ringState);
-        await new Promise((resolve) =>
-          setTimeout(resolve, ANIMATION_STEP_DELAY)
-        );
+        await new Promise((resolve) => {
+          const timeout = setTimeout(resolve, ANIMATION_STEP_DELAY);
+
+          solveStepNext = () => {
+            resolve();
+            clearTimeout(timeout);
+          };
+          solveStepPrev = () => {
+            if (j - dir < 0 || j - dir >= ringPath.length) return;
+            j -= dir * 2;
+            resolve();
+            clearTimeout(timeout);
+          };
+        });
       }
+      i += dir;
     }
     await new Promise((resolve) =>
       setTimeout(resolve, ANIMATION_STEP_DELAY * 3)
