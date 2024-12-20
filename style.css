@@ -1,0 +1,56 @@
+html {
+  background: #1a1a1a;
+  color: #fff;
+  font-family: "Open Sans", sans-serif;
+  --grid-size: 100;
+}
+
+.grid.top {
+  transform: translateX(520px) translateY(100px)
+    scale(var(--grid-size), var(--grid-size));
+}
+.grid.bottom {
+  transform: translateX(380px) translateY(100px)
+    scale(calc(var(--grid-size) * -1), var(--grid-size));
+}
+
+.grid-line {
+  stroke: #ccc;
+  stroke-width: 0.15;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.cutout {
+  stroke: #444;
+  stroke-width: 0.16;
+  fill: none;
+}
+
+.ring-number-0 .ring {
+  stroke: #e612e6;
+}
+.ring-number-0 .notch {
+  fill: #661266;
+}
+
+.ring-number-1 .ring {
+  stroke: #12e6e6;
+}
+.ring-number-1 .notch {
+  fill: #126666;
+}
+
+.ring {
+  stroke-width: 0.15;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.notch {
+  stroke: none;
+  display: none;
+}
+.notch-visible .notch {
+  display: initial;
+}
