@@ -51,7 +51,7 @@ const animationDelayInput = document.getElementById("animation-delay");
 animationDelayInput.value = ANIMATION_STEP_DELAY / 1000;
 animationDelayInput.addEventListener("change", (e) => {
   const value = +e.target.value * 1000;
-  if (value > 0) ANIMATION_STEP_DELAY = value;
+  if (value >= 0) ANIMATION_STEP_DELAY = value;
 });
 
 const directions = [];
